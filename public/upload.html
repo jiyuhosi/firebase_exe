@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="main.css" />
+    </head>
+    <body>
+        <div class="container mt-3">
+            <input
+                type="text"
+                class="form-control mt-2"
+                id="title"
+                placeholder="title"
+            />
+            <textarea class="form-control mt-2" id="content">content</textarea>
+            <input
+                type="text"
+                class="form-control mt-2"
+                id="price"
+                placeholder="price"
+            />
+            <input class="form-control mt-2" type="file" id="image" />
+            <button class="btn btn-danger mt-3" id="send">올리기</button>
+        </div>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+        <script>
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyDwzPaKltsTvRJcObqa971OOa3m7eU5D5k",
+                authDomain: "fir-exe-51376.firebaseapp.com",
+                projectId: "fir-exe-51376",
+                storageBucket: "fir-exe-51376.appspot.com",
+                messagingSenderId: "1033332017638",
+                appId: "1:1033332017638:web:1908587fb3263528f92e27",
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+        </script>
+
+        <script>
+            const db = firebase.firestore();
+            const storage = firebase.storage();
+            // db.collection("product").doc("상품3").set({ 제목: "변기" });
+            // db.collection('product').add({ 제목 : '변기' })
+            $("#send").click(function () {
+                let file = document.querySelector("#image").files[0];
+                let storageRef = storage.ref();
+                let savedRoot = storageRef.child("image/" + file.name);
+                let upload = savedRoot.put(file);
+
+                upload.on(
+                    "state_changed",
+                    // 변화시 동작하는 함수
+                    null,
+                    //에러시 동작하는 함수
+                    (error) => {
+                        console.error("실패사유는", error);
+                    },
+                    // 성공시 동작하는 함수
+                    () => {
+                        upload.snapshot.ref.getDownloadURL().then((url) => {
+                            console.log("업로드된 경로는", url);
+                        });
+                    }
+                );
+                let saved = {
+                    name: $("#title").val(),
+                    price: $("#price").val(),
+                    content: $("#content").val(),
+                    date: new Date(),
+                };
+
+                db.collection("product")
+                    .add(saved)
+                    .then((result) => {
+                        console.log(result);
+                        window.location.href = "/index.html";
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            });
+        </script>
+    </body>
+</html>
