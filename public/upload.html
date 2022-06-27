@@ -78,31 +78,32 @@
                     null,
                     //에러시 동작하는 함수
                     (error) => {
-                        console.error("실패사유는", error);
+                        console.error("error message", error);
                     },
                     // 성공시 동작하는 함수
                     () => {
                         upload.snapshot.ref.getDownloadURL().then((url) => {
-                            console.log("업로드된 경로는", url);
+                            console.log("upload root", url);
+                            let saved = {
+                                name: $("#title").val(),
+                                price: $("#price").val(),
+                                content: $("#content").val(),
+                                date: new Date(),
+                                image: url,
+                            };
+
+                            db.collection("product")
+                                .add(saved)
+                                .then((result) => {
+                                    console.log(result);
+                                    window.location.href = "/index.html";
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                });
                         });
                     }
                 );
-                let saved = {
-                    name: $("#title").val(),
-                    price: $("#price").val(),
-                    content: $("#content").val(),
-                    date: new Date(),
-                };
-
-                db.collection("product")
-                    .add(saved)
-                    .then((result) => {
-                        console.log(result);
-                        window.location.href = "/index.html";
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
             });
         </script>
     </body>

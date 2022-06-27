@@ -156,12 +156,12 @@
                 <div
                     class="thumbnail"
                     style="
-                        background-image: url('https://via.placeholder.com/350');
+                        background-image: url(${doc.data().image});
                     "
                 ></div>
                 <div class="flex-grow-1 p-4">
                     <h5 class="title">${doc.data().name}</h5>
-                    <p class="date">2030년 1월 8일</p>
+                    <p class="date">${doc.data().date}</p>
                     <p class="price">${doc.data().price}</p>
                     <p class="content">${doc.data().content}</p>
                     <p class="float-end">?0</p>
