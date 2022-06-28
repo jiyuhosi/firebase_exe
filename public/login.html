@@ -188,7 +188,7 @@
             const storage = firebase.storage();
 
             let userInfo = localStorage.getItem("userInfo");
-            $("#userName").html(JSON.parse(userInfo).displayName);
+            // $("#userName").html(JSON.parse(userInfo).displayName);
 
             firebase.auth().onAuthStateChanged((user) => {
                 if (user) {
@@ -235,8 +235,15 @@
                     .auth()
                     .createUserWithEmailAndPassword(email, password)
                     .then((result) => {
+                        let userInfo = {
+                            name: name,
+                            email: email,
+                        };
                         console.log(result.user);
                         result.user.updateProfile({ displayName: name });
+                        db.collection("user")
+                            .doc(result.user.uid)
+                            .set({ userInfo });
                     })
                     .catch((err) => {
                         console.log(err);
