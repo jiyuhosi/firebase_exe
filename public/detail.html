@@ -16,13 +16,19 @@
     <body>
         <div class="container">
             상세페이지임
-            <div class="detail-pic my-4" id="image"></div>
+            <button id="edit">edit</button>
+            <div
+                class="detail-pic my-4"
+                style="
+                    background-image: url('https://placeimg.com/640/380/tech');
+                "
+            ></div>
             <div>
                 <h5>올린사람 : 모름</h5>
                 <hr />
-                <h5 class="title" id="title"></h5>
-                <p class="price" id="price"></p>
-                <p class="date" id="date"></p>
+                <h5 class="title">상품명</h5>
+                <p class="date">올린날짜</p>
+                <p class="price">가격</p>
             </div>
         </div>
         <script
@@ -60,18 +66,21 @@
             const storage = firebase.storage();
 
             let queryString = new URLSearchParams(window.location.search);
-
+            $("#edit").click(function () {
+                window.location.href = "/edit.html?id=" + queryString.get("id");
+            });
             db.collection("product")
                 .doc(queryString.get("id"))
                 .get()
                 .then((result) => {
                     console.log(result.data());
-                    document.getElementById("price").innerHTML =
-                        result.data().price;
-                    document.getElementById("title").innerHTML =
-                        result.data().name;
-                    document.getElementById("date").innerHTML =
-                        result.data().date;
+                    $(".title").html(result.data().name);
+                    $(".price").html(result.data().price);
+                    $(".title").html(result.data().date);
+                    $(".detail-pic").css(
+                        "background-image",
+                        `url(${result.data().image})`
+                    );
                 })
                 .catch((err) => {
                     console.log(err);

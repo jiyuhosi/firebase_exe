@@ -65,48 +65,29 @@
             const db = firebase.firestore();
             const storage = firebase.storage();
 
+            let queryString = new URLSearchParams(window.location.search);
+
+            db.collection("product")
+                .doc(queryString.get("id"))
+                .get()
+                .then((result) => {
+                    console.log(result.data());
+                    $("#title").val(result.data().name);
+                    $("#content").val(result.data().content);
+                });
+
             // db.collection("product").doc("상품3").set({ 제목: "변기" });
             // db.collection('product').add({ 제목 : '변기' })
             $("#send").click(function () {
-                let file = document.querySelector("#image").files[0];
-                let storageRef = storage.ref();
-                let savedRoot = storageRef.child("image/" + file.name);
-                let upload = savedRoot.put(file);
-                let userInfo = localStorage.getItem("userInfo");
+                let modifyCotent = {
+                    name: $("#title").val(),
+                    content: $("#content").val(),
+                    price: $("#price").val(),
+                };
 
-                upload.on(
-                    "state_changed",
-                    // 변화시 동작하는 함수
-                    null,
-                    //에러시 동작하는 함수
-                    (error) => {
-                        console.error("error message", error);
-                    },
-                    // 성공시 동작하는 함수
-                    () => {
-                        upload.snapshot.ref.getDownloadURL().then((url) => {
-                            console.log("upload root", url);
-                            console.log(userInfo);
-                            let saved = {
-                                name: $("#title").val(),
-                                price: $("#price").val(),
-                                content: $("#content").val(),
-                                date: new Date(),
-                                image: url,
-                            };
-
-                            db.collection("product")
-                                .add(saved)
-                                .then((result) => {
-                                    console.log(result);
-                                    // window.location.href = "/index.html";
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                });
-                        });
-                    }
-                );
+                db.collection("product")
+                    .doc(queryString.get("id"))
+                    .update(modifyCotent);
             });
         </script>
     </body>
