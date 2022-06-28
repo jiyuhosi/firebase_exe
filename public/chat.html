@@ -78,18 +78,42 @@
             const storage = firebase.storage();
             var myUid = JSON.parse(localStorage.getItem("userInfo")).uid;
 
+            var chatroomId;
+
             db.collection("chatroom")
                 .where("who", "array-contains", myUid)
                 .get()
                 .then((result) => {
                     result.forEach((a) => {
+                        console.log(a.id);
                         var template = `<li class="list-group-item">
             <h6>${a.data().product}</h6>
             <h6 class="text-small">${a.id}</h6>
           </li>`;
                         $(".chat-list").append(template);
+
+                        //저거 박스 누르면 채팅방 id 가져오는 코드
+                        $(".list-group-item").click(function () {
+                            var chatroomId = $(this)
+                                .children(".text-small")
+                                .text();
+                            console.log(chatroomId);
+                        });
                     });
                 });
+            console.log(chatroomId);
+            $("#send").click(function () {
+                var data = {
+                    content: $("#chat-input").val(),
+                    date: new Date(),
+                    uid: myUid,
+                };
+
+                db.collection("chatroom")
+                    .doc(chatroomId)
+                    .collection("messages")
+                    .add(data);
+            });
         </script>
     </body>
 </html>
